@@ -30,25 +30,30 @@ export const ride_accepted = async () => {
                 time: rideTime
             }
 
+            setTimeout( async () => {
+            
+                const producer = kafka.producer()
+                await producer.connect()
+    
+                await producer.send({
+                    topic: 'ride-update',
+                    messages: [
+                        {
+                            key: "ride-update",
+                            value: JSON.stringify(details)
+                        }
+                    ]
+                })
+    
+                await producer.disconnect()
+                
+                const userws = users.filter((user) => user.userId === details.user.userId)[0].ws
+    
+                broadCastToClient(`Ride started, timer : ${rideTime}`, userws)
+            
+            }, 1000);
 
-            const producer = kafka.producer()
-            await producer.connect()
 
-            await producer.send({
-                topic: 'ride-update',
-                messages: [
-                    {
-                        key: "ride-update",
-                        value: JSON.stringify(details)
-                    }
-                ]
-            })
-
-            await producer.disconnect()
-
-            const userws = users.filter((user) => user.userId === details.user.userId)[0].ws
-
-            broadCastToClient(`Ride started, timer : ${rideTime}`, userws)
 
         },
     })
