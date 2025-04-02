@@ -42,10 +42,11 @@ export const ride_requested = async () => {
     await consumer.connect();
 
     await consumer.subscribe({ topics: ['ride-requested'] })
-
+    
     consumer.run({
         eachMessage: async ({ topic, partition, message, heartbeat, pause }) => {
-
+            
+            console.log('I am here')
             const rider = getRider()
             const rideId = nanoid()
             const user: User = JSON.parse(message.value?.toString() as string)
@@ -70,7 +71,11 @@ export const ride_requested = async () => {
             const userId = user.userId;
             const userws = users.filter((user) => user.userId === userId)[0].ws
 
-            broadCastToClient(`Ride accepted -> rider name : ${rider.rider_name}`, userws)
+            const msg = JSON.stringify({
+                event: 'request',
+                riderName: rider.rider_name
+            })
+            broadCastToClient(msg, userws)
 
         },
     })

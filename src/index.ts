@@ -15,10 +15,22 @@ server.on("connection", (ws, req) => {
     }
     const params = parse(req.url, true).query;
     const userId = params.userId as string || "Unknown";
-    users.push({
-        userId,
-        ws
-    })
+
+    const user = users.filter((u) => u.userId == userId)
+
+    if(user && user.length){
+        for(const user of users){
+            if(user.userId == userId){
+                user.ws = ws
+            }
+        }
+    } else {
+        users.push({
+            userId,
+            ws
+        })
+    }
+
     console.log(`${userId} connected !!`)
 
     ws.on("close", () => {

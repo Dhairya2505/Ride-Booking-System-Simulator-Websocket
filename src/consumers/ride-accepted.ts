@@ -44,12 +44,18 @@ export const ride_accepted = async () => {
                         }
                     ]
                 })
-    
+
+                
                 await producer.disconnect()
                 
                 const userws = users.filter((user) => user.userId === details.user.userId)[0].ws
-    
-                broadCastToClient(`Ride started, timer : ${rideTime}`, userws)
+                
+                const msg = JSON.stringify({
+                    event: 'accepted',
+                    time : rideTime
+                })
+
+                broadCastToClient(msg, userws)
             
             }, 1000);
 
