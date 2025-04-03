@@ -31,14 +31,11 @@ server.on("connection", (ws, req) => {
         })
     }
 
-    console.log(`${userId} connected !!`)
-
     ws.on("close", () => {
 
         for (const user of users) {
             if (user.ws === ws) {
                 user.ws = null;
-                console.log(`${user.userId} disconnected`);
                 break;
             }
         }

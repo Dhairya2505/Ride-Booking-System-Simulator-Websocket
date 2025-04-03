@@ -5,7 +5,7 @@ import { User } from "./ride-requested.js";
 
 
 export const ride_accepted = async () => {
-    
+
     const consumer = kafka.consumer({ groupId: "rideAccepted" });
     await consumer.connect();
 
@@ -30,34 +30,30 @@ export const ride_accepted = async () => {
                 time: rideTime
             }
 
-            setTimeout( async () => {
-            
-                const producer = kafka.producer()
-                await producer.connect()
-    
-                await producer.send({
-                    topic: 'ride-update',
-                    messages: [
-                        {
-                            key: "ride-update",
-                            value: JSON.stringify(details)
-                        }
-                    ]
-                })
+            const producer = kafka.producer()
+            await producer.connect()
 
-                
-                await producer.disconnect()
-                
-                const userws = users.filter((user) => user.userId === details.user.userId)[0].ws
-                
-                const msg = JSON.stringify({
-                    event: 'accepted',
-                    time : rideTime
-                })
+            await producer.send({
+                topic: 'ride-update',
+                messages: [
+                    {
+                        key: "ride-update",
+                        value: JSON.stringify(details)
+                    }
+                ]
+            })
 
-                broadCastToClient(msg, userws)
-            
-            }, 1000);
+
+            await producer.disconnect()
+
+            const userws = users.filter((user) => user.userId === details.user.userId)[0].ws
+
+            const msg = JSON.stringify({
+                event: 'accepted',
+                time: rideTime
+            })
+
+            broadCastToClient(msg, userws)
 
 
 

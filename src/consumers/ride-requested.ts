@@ -46,7 +46,6 @@ export const ride_requested = async () => {
     consumer.run({
         eachMessage: async ({ topic, partition, message, heartbeat, pause }) => {
             
-            console.log('I am here')
             const rider = getRider()
             const rideId = nanoid()
             const user: User = JSON.parse(message.value?.toString() as string)
